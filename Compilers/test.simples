@@ -1,0 +1,58 @@
+/* Exemplo de um programa escrito em SIMPLES */
+
+programa
+inicio
+
+    inteiro a[2];
+    inteiro b[2];
+    inteiro c[2];
+    inteiro i;
+    inteiro q1 <- 6 ;
+    inteiro g1;
+    inteiro h1;
+    inteiro m1;
+    flutuante r1 ;
+   
+    leia r1;
+    leia g1;
+    leia h1;
+    leia m1;
+
+   r1 <- 2.6 * (r1 - 2.0) ;
+    
+   escreva (r1 * r1) ;
+
+   g1 <- g1 + h1 ;
+
+   se g1 > h1 entao
+	   escreva g1 ;
+      se h1 = 10 entao
+         escreva h1 ;
+      senao
+         escreva r1 ;
+      fimse
+   senao
+      escreva r1 div 2.0 ;
+   fimse
+ 
+
+    para i de 1 ate 10 passo 1 faca
+      escreva i ;
+    fimpara
+
+    enquanto (g1 > h1 e h1 < 10) ou g1 < 10 faca
+      escreva g1 * 10 ;
+      g1 <- g1 - 1 ;
+    fimenquanto
+
+
+    para i de 1 ate 2 passo 1 faca
+      leia a[i];
+      leia b[i];
+    fimpara
+
+    /* vamos ter que implementar no projeto final */
+    /*c[] = a[] expr b[] */
+  
+
+fim

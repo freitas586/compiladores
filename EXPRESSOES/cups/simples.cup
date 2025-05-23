@@ -1,0 +1,63 @@
+  
+   
+/* ----------------------Preliminary Declarations Section--------------------*/
+   
+/* Import the class java_cup.runtime.*  */
+import java_cup.runtime.*;
+import java.util.*;
+   
+parser code {:
+     
+    public void report_error(String message, Object info) {
+        StringBuilder m = new StringBuilder("Error");
+        if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+
+            if (s.left >= 0) {                
+                m.append(" in line "+(s.left+1));   
+                if (s.right >= 0)                    
+                    m.append(", column "+(s.right+1));
+            }
+        }
+
+        m.append(" : "+message);
+        System.err.println(m);
+    }
+
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:};
+  
+   
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+
+/* Terminals (tokens returned by the scanner). */
+terminal           SEMI, PLUS, MINUS, TIMES, DIVIDE;
+terminal           LPAREN, RPAREN;
+terminal   String  INTT;
+
+/* Non-terminals */
+non terminal            expr_list, expr_part; 
+non terminal Integer    expr;
+
+/* Precedences */
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+
+/* The grammar */
+expr_list ::= expr_list  expr_part 
+	         | expr_part
+             ; 
+
+expr_part ::= expr:e {: System.out.println("= " + e); :} SEMI              
+	      ;
+
+expr     ::= expr:e1 PLUS expr:e2   {: RESULT = e1 + e2; :} 
+	      |   expr:e1 MINUS expr:e2  {: RESULT = e1 - e2; :} 
+	      |   expr:e1 TIMES expr:e2  {: RESULT = e1 * e2; :} 
+	      |   expr:e1 DIVIDE expr:e2 {: RESULT = e1 / e2; :} 
+	      |   LPAREN expr:e RPAREN   {: RESULT = e;  :} 
+          |   INTT:n  {: RESULT = Integer.parseInt(n); :} 
+	      ;

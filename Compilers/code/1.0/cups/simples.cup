@@ -1,0 +1,18 @@
+
+import java_cup.runtime.*;
+   
+
+/* Terminals (tokens returned by the scanner). */
+terminal            PLUS, MINUS, TIMES, DIVIDE,  LPAREN, RPAREN, LBRCKT, RBRCKT, EQUALS, GREATER,LESS, PROGRAM;
+terminal            STARTPRG, ENDPRG, READLINE, WRITELINE,DECLINT,DECLFLOAT, E, OU, NAO;
+terminal            IFF, SEMI, THENN,  ELSEE, ENDELSE, ATTRIB, PARA, DE, ATE, PASSO, FACA, FIMPARA, ENQUANTO, FIMENQUANTO;
+terminal        	  ID;
+terminal            INTT;        // our scanner provides numbers as integers
+terminal            FLOATT;
+
+/*-*
+ * The following two lines define a dummy non-terminal and grammar rule.  CUP
+ * needs at least one rule to run without errors.
+ */
+non terminal dummy;
+dummy ::= ;
