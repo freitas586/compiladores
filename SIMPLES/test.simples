@@ -1,4 +1,4 @@
-/* Exemplo de um programa escrito em SIMPLES */
+/* Programa escrito na linguagem SIMPLES */
 
 programa
 inicio
@@ -8,24 +8,40 @@ inicio
    inteiro f;
    inteiro i;
    flutuante d;
+   inteiro vteste[10];
+   inteiro cteste[10];
+   inteiro dteste[5+8];
+   inteiro r[10];
+   inteiro va[10];
+   inteiro vb[10];
+   flutuante ff[3];
+
+   cteste[0] <- 5;
+   vteste[6] <- vteste[4] + cteste[2] - 8;
+
+   para i de 1 ate 10 passo 1 faca
+      leia cteste[i];
+   fimpara
+
+   b <- 8 + va[2];
 
    leia a;
    leia c;
    leia f;
    leia d;
 
-   b <- (a + b) * c div c;
+   b <- (a + b) * c div c + va[2];
    f <- 5 + 2;
    c <- c + f * 5;
 
    escreva b;
-   escreva f;
+   escreva flll;
    escreva c;
    escreva d;
 
    se b > f entao
       escreva b;
-   senao 
+   senao
       escreva f;
    fimse
 
@@ -40,16 +56,12 @@ inicio
    enquanto (b > f e a < 1000) ou a < f faca
       escreva f * 10 ;
       f <- f - 1 ;
-      enquanto(b = 10) faca
-         escreva b;
-         b <- b - 2;
-      fimenquanto
     fimenquanto
 
 
-    para i de 1 ate 10 passo 2 faca
+   para i de 10 ate 1 passo -1 faca
       escreva i;
-    fimpara 
+   fimpara
+
 
 fim
-

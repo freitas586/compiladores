@@ -65,10 +65,10 @@ comment =  {commentinicio}{commentbody}{commentfim} | \/\/[a-zA-Z0-9 \t]*
     "inteiro"          {  return symbol(sym.DECLINT);  }
     "flutuante"        {  return symbol(sym.DECLFLOAT);}
     "se"               {  return symbol(sym.IFF);      }
+    "nao"              {  return symbol(sym.NAO);       }
     "entao"            {  return symbol(sym.THENN);    }
     "senao"            {  return symbol(sym.ELSEE);    }
     "fimse"            {  return symbol(sym.ENDELSE);  }
-    "nao"              {  return symbol(sym.NAO);       }
     "para"             {  return symbol(sym.PARA);     }
     "de"               {  return symbol(sym.DE);       }
     "ate"              {  return symbol(sym.ATE);      }

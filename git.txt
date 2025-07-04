@@ -1,5 +1,5 @@
 git init
 git add . (usar o comando na pasta 1.0)
-git commit -m "comentario"
 git status
+git commit -m "comentario"
 git push -u origin main

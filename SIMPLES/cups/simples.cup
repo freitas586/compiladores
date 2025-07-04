@@ -51,35 +51,34 @@ parser code {:
        }
   }
 
-  
   private Hashtable<String,TabelaSimbolo> dicionario = new Hashtable<String,TabelaSimbolo>();
-  private int pos = 0;
+
 
   /* emitir código C */
+  
 
     public void emit_program(){
        System.out.print("#include <stdio.h>\n");
        System.out.print("#include <stdlib.h>\n");
        System.out.print("\nint main()");
+
     }
 
-    public void emit_startblock(){
-       System.out.print("{");
-       format_code(pos++);
-       System.out.print("\n");
+    public void emit_startprogram(){
+
+       System.out.print("{\n");
 
     }
 
  
-     public void emit_endblock(){
-       format_code(--pos);
-       System.out.print("}");
-       System.out.print("\n");
+     public void emit_endprg(){
+      
+       System.out.print("}\n");
        
     }
 
      public void emit_return(){
-       format_code(pos); 
+
        System.out.print("return 0;\n");
 
     }
@@ -89,8 +88,6 @@ parser code {:
     }
                                                                 
     public void emit_declaracao_variavel_com_atribuicao(String id, String tipo, String value){
-
-       format_code(pos); 
 
        if(dicionario.containsKey(id)){
         report_fatal_error("Variável duplicada [" + id + "]",null);
@@ -104,11 +101,10 @@ parser code {:
 
         dicionario.put(id, new TabelaSimbolo(tipo,false));                                  
        }
+              
     }
 
     public void emit_declaracao_variavel(String id, String tipo){
-
-      format_code(pos); 
 
       if(dicionario.containsKey(id)){
         report_fatal_error("Variável duplicada [" + id + "]",null);
@@ -124,9 +120,6 @@ parser code {:
     }
 
     public void emit_atribuicao(String id, String value){
-
-        format_code(pos); 
-
         if(! dicionario.containsKey(id)){
             report_fatal_error("Variável não declarada [" + id + "]",null);
         }
@@ -134,8 +127,6 @@ parser code {:
     }
 
     public void emit_escreva(String id){
-
-        format_code(pos);  
 
      TabelaSimbolo t1 = dicionario.get(id);  
       if(t1 == null) {
@@ -153,8 +144,6 @@ parser code {:
 
     public void emit_leia(String id){
 
-       format_code(pos);   
-
       TabelaSimbolo t1 = dicionario.get(id);  
       if(t1 == null) {
          report_fatal_error("Variável não declarada [" + id + "]",null);
@@ -168,42 +157,12 @@ parser code {:
             System.out.print("scanf(\"%f\",&" + id + ")");
          }   
       }
+    
 
-    public void emit_if(String value){
-           format_code(pos); 
-           
-         System.out.print("if("+ value +")");
-    }
 
-    public void emit_else(){
-
-           format_code(pos); 
-
-         System.out.print("else");
-    }
-
-    public void emit_for(String id, String n1, String n2, String n3){
-
-      format_code(pos); 
-      TabelaSimbolo t1 = dicionario.get(id);  
-      if(t1 == null) {
-         report_fatal_error("Variável não declarada [" + id + "]",null);
-      }    
-
-         System.out.print("for("+ id +" = "+ n1 +";"+ id +" < "+ n2 +";"+ id+ " += "+ n3 +")");
-      
-    }
-
-   public void emit_while(String value){
-        format_code(pos); 
-         TabelaSimbolo t1 = dicionario.get(value);  
-      if(t1 == null) {
-         report_fatal_error("Variável não declarada [" + value + "]",null);
-      }   
-       System.out.print("while("+value+")");
-    }
 
     /* métodos auxiliares */
+                                                                            
     public String checkExpr(String e1, String e2){   
         String tipoE1 = "", tipoE2 = "";                                                      
 
@@ -233,15 +192,10 @@ parser code {:
             if(! tipoE1.equals(tipoE2)){
                 report_fatal_error("Linguagem não permite operações com tipos diferentes !",null);
             }
+
         }
 
         return tipoE1;
-    }
-
-     public void format_code(int pos){
-       for(int i=0; i < pos * 3; i++){
-          System.out.print(" ");  
-       }
     }
 
 :};
@@ -252,30 +206,29 @@ parser code {:
 /* Terminals (tokens returned by the scanner). */
 terminal            PLUS, MINUS, TIMES, DIVIDE,  LPAREN, RPAREN, LBRCKT, RBRCKT, EQUALS, GREATER,LESS, PROGRAM, STARTPRG, ENDPRG, READLINE, WRITELINE,DECLINT,DECLFLOAT, E, OU, NAO;
 terminal            IFF, SEMI, THENN,  ELSEE, ENDELSE, ATTRIB, PARA, DE, ATE, PASSO, FACA, FIMPARA, ENQUANTO, FIMENQUANTO;
-terminal String	    ID;
+terminal String	  ID;
 terminal String     INTT;      
 terminal String     FLOATT;
 
 /* Non terminals */
-non terminal             program, list_command, command, assign , declare_variable, writel, readl,if,elsepart,for,while;
+non terminal             program, list_command, command, assign , declare_variable, writel, readl;
 non terminal  String    expr,tipo,vetor;      
 
 /* Precedences */
-precedence left EQUALS;
 precedence left GREATER, LESS;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
 precedence left LPAREN, RPAREN;
 precedence left LBRCKT, RBRCKT; 
 precedence left E, OU, NAO;
-
+precedence left EQUALS;
 
 
 /* The grammar rules */
 program ::= PROGRAM        {: emit_program(); :} 
-            STARTPRG       {: emit_startblock();            :} 
+            STARTPRG       {: emit_startprogram();            :} 
             list_command   
-            ENDPRG         {: emit_endblock() ;            :}
+            ENDPRG         {: emit_endprg() ;            :}
             ;
 
 list_command ::= list_command command 
@@ -285,11 +238,8 @@ list_command ::= list_command command
 command ::=    declare_variable 
             |  assign
             |  readl
-            |  writel
-            |  if
-            |  for
-            |  while            
-            ;
+            |  writel            
+             ;
           
 
 tipo ::=      DECLINT:t   {: RESULT = "INT"  ;     :}
@@ -303,7 +253,7 @@ declare_variable ::=  tipo:t  ID:id
                       SEMI         {: emit_semi(); :}
                     
                      | tipo:t ID:id {: emit_declaracao_variavel(id,t);  :} 
-                       SEMI         {:  emit_semi(); :}
+                      SEMI         {:  emit_semi(); :}
                      ;
 
 
@@ -323,30 +273,7 @@ readl      ::= READLINE
                expr:id       {: emit_leia(id); :}
                SEMI          {: emit_semi();:}
             ;
-
-if          ::= IFF 
-                expr:value    {: emit_if(value);   :}
-                THENN         {: emit_startblock();  :}
-                list_command
-                elsepart  
-                ENDELSE       {: emit_endblock();       :}
-                ;
-
-elsepart      ::=  ELSEE      {: emit_endblock(); emit_else(); emit_startblock(); :}
-                   list_command
-                   | /* empty */
-                   ;
-
-for         ::= PARA ID:id DE INTT:n1 ATE INTT:n2 PASSO INTT:n3 FACA {: emit_for(id,n1,n2,n3); emit_startblock();  :}
-                list_command
-                FIMPARA {:  emit_endblock(); :}
-            ;
-
-while       ::= ENQUANTO expr:value {: emit_while(value); :}
-                FACA                {: emit_startblock();  :}
-                list_command
-                FIMENQUANTO         {:  emit_endblock(); :}
-            ;                                                       
+                                                                      
                                                                                          
                                                       
 
