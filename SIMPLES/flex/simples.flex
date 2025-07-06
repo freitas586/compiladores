@@ -25,11 +25,12 @@ import java_cup.runtime.*;
 %}
    
 digit           = [0-9]  
-LineTerminator = \r|\n|\r\n
-WhiteSpace     = {LineTerminator} | [ \t\f]
-integer   =   {digit}+
-float = {integer}\.{integer}
-identifier = [A-Za-z_][A-Za-z_0-9]*     
+LineTerminator  = \r|\n|\r\n
+WhiteSpace      = {LineTerminator} | [ \t\f]
+integer         = {digit}+
+float           = {integer}\.{integer}
+identifier      = [A-Za-z_][A-Za-z_0-9]*     
+text            = \"([^\"\\]|\\.)*\"
 
 commentinicio   = \/\*
 commentfim      = \*\/
@@ -65,10 +66,10 @@ comment =  {commentinicio}{commentbody}{commentfim} | \/\/[a-zA-Z0-9 \t]*
     "inteiro"          {  return symbol(sym.DECLINT);  }
     "flutuante"        {  return symbol(sym.DECLFLOAT);}
     "se"               {  return symbol(sym.IFF);      }
-    "nao"              {  return symbol(sym.NAO);       }
     "entao"            {  return symbol(sym.THENN);    }
     "senao"            {  return symbol(sym.ELSEE);    }
     "fimse"            {  return symbol(sym.ENDELSE);  }
+    "nao"              {  return symbol(sym.NAO);       }
     "para"             {  return symbol(sym.PARA);     }
     "de"               {  return symbol(sym.DE);       }
     "ate"              {  return symbol(sym.ATE);      }
@@ -79,9 +80,15 @@ comment =  {commentinicio}{commentbody}{commentfim} | \/\/[a-zA-Z0-9 \t]*
     "fimenquanto"      {  return symbol(sym.FIMENQUANTO);}
     "e"                {  return symbol(sym.E);        }
     "ou"               {  return symbol(sym.OU);       }
- 
-    {integer}      { return symbol(sym.INTT,yytext()); }
-    {float}    { return symbol(sym.FLOATT, yytext()); }
+    "escreval"         {  return symbol(sym.ESCREVAL); }
+    ","                {  return symbol(sym.COMMA);   }
+    "vazio"            {  return symbol(sym.VOID);     }
+    "procedimento"     {  return symbol(sym.PROCEDURE);  }
+    "retorna"          {  return symbol(sym.RETURN);   }
+
+    {integer}          { return symbol(sym.INTT,yytext()); }
+    {float}            { return symbol(sym.FLOATT, yytext()); }
+    {text}             { return symbol(sym.TEXTO, yytext()); }
     {identifier}       { return symbol(sym.ID, yytext());} 
     {WhiteSpace}       { /* just skip what was found, do nothing */ }   
     {comment}          { /* just skip what was found, do nothing */ }   

@@ -11,6 +11,7 @@ public class sym {
   public static final int READLINE = 16;
   public static final int FIMENQUANTO = 36;
   public static final int DE = 30;
+  public static final int ESCREVAL = 46;
   public static final int EQUALS = 10;
   public static final int LPAREN = 6;
   public static final int GREATER = 11;
@@ -23,19 +24,23 @@ public class sym {
   public static final int THENN = 25;
   public static final int OU = 21;
   public static final int ATE = 31;
+  public static final int COMMA = 38;
+  public static final int RETURN_TYPE = 40;
   public static final int ENDPRG = 15;
   public static final int PLUS = 2;
-  public static final int ID = 37;
+  public static final int ID = 42;
   public static final int ELSEE = 26;
   public static final int EOF = 0;
+  public static final int RETURN = 39;
   public static final int STARTPRG = 14;
   public static final int ENDELSE = 27;
   public static final int error = 1;
   public static final int PROGRAM = 13;
   public static final int ENQUANTO = 35;
   public static final int DECLFLOAT = 19;
+  public static final int VOID = 41;
   public static final int FIMPARA = 34;
-  public static final int INTT = 38;
+  public static final int INTT = 43;
   public static final int FACA = 33;
   public static final int TIMES = 4;
   public static final int WRITELINE = 17;
@@ -43,8 +48,10 @@ public class sym {
   public static final int RBRCKT = 9;
   public static final int DECLINT = 18;
   public static final int PARA = 29;
-  public static final int FLOATT = 39;
+  public static final int TEXTO = 45;
+  public static final int FLOATT = 44;
   public static final int NAO = 22;
+  public static final int PROCEDURE = 37;
   public static final int IFF = 23;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -84,9 +91,16 @@ public class sym {
   "FIMPARA",
   "ENQUANTO",
   "FIMENQUANTO",
+  "PROCEDURE",
+  "COMMA",
+  "RETURN",
+  "RETURN_TYPE",
+  "VOID",
   "ID",
   "INTT",
-  "FLOATT"
+  "FLOATT",
+  "TEXTO",
+  "ESCREVAL"
   };
 }
 
