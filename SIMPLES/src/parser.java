@@ -593,13 +593,13 @@ public class parser extends java_cup.runtime.lr_parser {
         System.out.print("\nint main()");
     }
 
-    public void emit_startblock() {
+    public void emit_start_block() {
         System.out.print("{");
         indent_code(pos++);
         System.out.print("\n");
     }
 
-    public void emit_endblock() {
+    public void emit_end_block() {
         indent_code(--pos);
         System.out.print("}\n");
     }
@@ -618,7 +618,7 @@ public class parser extends java_cup.runtime.lr_parser {
         if (dicionario.containsKey(id)) {
             String v = dicionario.get(id).getScope();
             if (v.equals(SCOPE))
-                report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] na função [" + SCOPE + "]", null);
+                report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
 
         if (tipo.equals("INT")) {
@@ -636,7 +636,7 @@ public class parser extends java_cup.runtime.lr_parser {
         if (dicionario.containsKey(id)) {
             String value = dicionario.get(id).getScope();
             if (value.equals(SCOPE))
-                report_fatal_error("emit_declaracao_variavel: Variável duplicada [" + id + "] na função [" + SCOPE + "]", null);
+                report_fatal_error("emit_declaracao_variavel: Variável duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
 
         if (tipo.equals("INT")) {
@@ -649,7 +649,7 @@ public class parser extends java_cup.runtime.lr_parser {
     }
 
     public void emit_atribuicao(String id, String value) {
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         System.out.print(id + " = " + value + ";\n");
     }
 
@@ -675,9 +675,11 @@ public class parser extends java_cup.runtime.lr_parser {
 
     public void emit_leia(String id) {
         indent_code(pos);
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         TabelaSimbolo t1 = dicionario.get(id);
+
         String tipo = t1.getTipo();
+
         if (tipo.equals("INT")) {
             System.out.print("scanf(\"%d\", &" + id + ");\n");
         } else {
@@ -714,6 +716,13 @@ public class parser extends java_cup.runtime.lr_parser {
         System.out.print("while (" + value + ") ");
     }
 
+    public void indent_code(int pos) {
+        for (int i = 0; i < pos * 3; i++) {
+            System.out.print(" ");
+        }
+    }
+
+
     public String checkExpr(String e1, String e2) {
         String tipoE1 = "", tipoE2 = "";
 
@@ -721,6 +730,7 @@ public class parser extends java_cup.runtime.lr_parser {
             String e1_original = e1;
             if (e1.contains("[")) e1 = e1.substring(0, e1.indexOf('['));
             TabelaSimbolo t1 = dicionario.get(e1);
+
             if (t1 == null) {
                 report_fatal_error("Variável não declarada [" + e1_original + "]", null);
             }
@@ -744,13 +754,7 @@ public class parser extends java_cup.runtime.lr_parser {
         return tipoE1;
     }
 
-    public void indent_code(int pos) {
-        for (int i = 0; i < pos * 3; i++) {
-            System.out.print(" ");
-        }
-    }
-
-    public void emit_escreval(String id) {
+        public void emit_escreval(String id) {
         indent_code(pos);
         TabelaSimbolo t1 = dicionario.get(id);
         if (t1 == null) {
@@ -771,7 +775,7 @@ public class parser extends java_cup.runtime.lr_parser {
 
     public void emit_atribuicao_vetor(String id, String tamanho, String expressao) {
         indent_code(pos);
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         System.out.print(id + "[" + tamanho + "] = " + expressao + ";\n");
     }
 
@@ -780,7 +784,7 @@ public class parser extends java_cup.runtime.lr_parser {
         if (dicionario.containsKey(id)) {
             String value = dicionario.get(id).getScope();
             if (value.equals(SCOPE))
-                report_fatal_error("emit_declaracao_vetor: Variável duplicada [" + id + "] na função [" + SCOPE + "]", null);
+                report_fatal_error("emit_declaracao_vetor: Variável duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
 
         if (tipo.equals("INT")) {
@@ -792,7 +796,7 @@ public class parser extends java_cup.runtime.lr_parser {
         dicionario.put(id, new TabelaSimbolo(tipo, true, tamanho, SCOPE));
     }
 
-    public void checarVariavelNaoDeclarada(String id) {
+    public void checar_Variavel_Nao_Declarada(String id) {
         if (id.contains("[")) {
             id = id.substring(0, id.indexOf('['));
         }
@@ -819,7 +823,7 @@ public class parser extends java_cup.runtime.lr_parser {
     }
 
     public void emit_parameter_declaration(String id) {
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         System.out.print(id.trim());
     }
 
@@ -896,7 +900,7 @@ class CUP$parser$actions {
           case 4: // NT$2 ::= 
             {
               Object RESULT =(Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
- emit_startblock(); 
+ emit_start_block(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$2",30, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -907,7 +911,7 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$2
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		 emit_endblock(); 
+		 emit_end_block(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("program",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -973,7 +977,7 @@ class CUP$parser$actions {
 		int nameleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-7)).value;
- emit_startblock(); 
+ emit_start_block(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$6",34, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -987,7 +991,7 @@ class CUP$parser$actions {
 		int nameleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-10)).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-10)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-10)).value;
-		 emit_endblock(); System.out.print("\n\n"); 
+		 emit_end_block(); System.out.print("\n\n"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("function",23, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-12)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1792,7 +1796,7 @@ emit_escreval_texto(t);
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
- emit_startblock();  
+ emit_start_block();  
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$27",55, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1806,7 +1810,7 @@ emit_escreval_texto(t);
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
-		 emit_endblock();       
+		 emit_end_block();       
               CUP$parser$result = parser.getSymbolFactory().newSymbol("if",7, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1815,7 +1819,7 @@ emit_escreval_texto(t);
           case 82: // NT$28 ::= 
             {
               Object RESULT =null;
- emit_endblock(); emit_else(); emit_startblock(); 
+ emit_end_block(); emit_else(); emit_start_block(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$28",56, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1856,7 +1860,7 @@ emit_escreval_texto(t);
 		int n3left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int n3right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String n3 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
- emit_for(id,n1,n2,n3); emit_startblock();  
+ emit_for(id,n1,n2,n3); emit_start_block();  
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$29",57, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1879,7 +1883,7 @@ emit_escreval_texto(t);
 		int n3left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int n3right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
 		String n3 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
-		  emit_endblock(); 
+		  emit_end_block(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("for",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-11)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1903,7 +1907,7 @@ emit_escreval_texto(t);
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
- emit_startblock();  
+ emit_start_block();  
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$31",59, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1917,7 +1921,7 @@ emit_escreval_texto(t);
 		int valueleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).left;
 		int valueright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).right;
 		String value = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-5)).value;
-		  emit_endblock(); 
+		  emit_end_block(); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("while",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

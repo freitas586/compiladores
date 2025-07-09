@@ -22,29 +22,28 @@ import java_cup.runtime.*;
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
-%}
-   
+%}   
 digit           = [0-9]  
 LineTerminator  = \r|\n|\r\n
 WhiteSpace      = {LineTerminator} | [ \t\f]
 integer         = {digit}+
 float           = {integer}\.{integer}
-identifier      = [A-Za-z_][A-Za-z_0-9]*     
-text            = \"([^\"\\]|\\.)*\"
-
+identifier      = [A-Za-z_][A-Za-z_0-9]*    
 commentinicio   = \/\*
 commentfim      = \*\/
 naocommentfim   = [^\*\/]
 commentbody     = {naocommentfim}*
 comment =  {commentinicio}{commentbody}{commentfim} | \/\/[a-zA-Z0-9 \t]*  
+text            = \"([^\"\\]|\\.)*\"
 
-%%
+%% 
+
 /* ------------------------Lexical Rules Section---------------------- */
 
    
 <YYINITIAL> {
 
-   
+/* Punctuation and Operators */
     ";"                {  return symbol(sym.SEMI);     }
     "+"                {  return symbol(sym.PLUS);     }
     "-"                {  return symbol(sym.MINUS);    }
@@ -58,18 +57,30 @@ comment =  {commentinicio}{commentbody}{commentfim} | \/\/[a-zA-Z0-9 \t]*
     "="                {  return symbol(sym.EQUALS);   }
     ">"                {  return symbol(sym.GREATER);  }
     "<"                {  return symbol(sym.LESS);     }
+    ","                {  return symbol(sym.COMMA);    }
+
+/* I/O Operations */
     "escreva"          {  return symbol(sym.WRITELINE);}
     "leia"             {  return symbol(sym.READLINE); }
+    "escreval"         {  return symbol(sym.ESCREVAL); }
+
+/* Program Structure */
     "programa"         {  return symbol(sym.PROGRAM);  }
     "inicio"           {  return symbol(sym.STARTPRG); }
     "fim"              {  return symbol(sym.ENDPRG);   }
+
+/* Type Declarations */
     "inteiro"          {  return symbol(sym.DECLINT);  }
     "flutuante"        {  return symbol(sym.DECLFLOAT);}
+    "vazio"            {  return symbol(sym.VOID);     }
+
+ /* Control Flow - Conditional */
     "se"               {  return symbol(sym.IFF);      }
     "entao"            {  return symbol(sym.THENN);    }
     "senao"            {  return symbol(sym.ELSEE);    }
     "fimse"            {  return symbol(sym.ENDELSE);  }
-    "nao"              {  return symbol(sym.NAO);       }
+
+/* Control Flow - Loops */
     "para"             {  return symbol(sym.PARA);     }
     "de"               {  return symbol(sym.DE);       }
     "ate"              {  return symbol(sym.ATE);      }
@@ -78,20 +89,27 @@ comment =  {commentinicio}{commentbody}{commentfim} | \/\/[a-zA-Z0-9 \t]*
     "fimpara"          {  return symbol(sym.FIMPARA);  }
     "enquanto"         {  return symbol(sym.ENQUANTO); }
     "fimenquanto"      {  return symbol(sym.FIMENQUANTO);}
+
+/* Logical Operators */
     "e"                {  return symbol(sym.E);        }
     "ou"               {  return symbol(sym.OU);       }
-    "escreval"         {  return symbol(sym.ESCREVAL); }
-    ","                {  return symbol(sym.COMMA);   }
-    "vazio"            {  return symbol(sym.VOID);     }
-    "procedimento"     {  return symbol(sym.PROCEDURE);  }
+    "nao"              {  return symbol(sym.NAO);      }
+
+/* Functions */
+    "procedimento"     {  return symbol(sym.PROCEDURE);}
     "retorna"          {  return symbol(sym.RETURN);   }
 
+/* Literals and Identifiers */
     {integer}          { return symbol(sym.INTT,yytext()); }
     {float}            { return symbol(sym.FLOATT, yytext()); }
     {text}             { return symbol(sym.TEXTO, yytext()); }
     {identifier}       { return symbol(sym.ID, yytext());} 
+
+/* Skip whitespace and comments */
+
     {WhiteSpace}       { /* just skip what was found, do nothing */ }   
     {comment}          { /* just skip what was found, do nothing */ }   
 }
 
+/* Error handling for illegal characters */
 [^]                    { System.err.println("Error: Caracter Ilegal <"+yytext()+"> na linha: " + yyline); }

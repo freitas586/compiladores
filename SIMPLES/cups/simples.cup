@@ -88,13 +88,13 @@ parser code {:
         System.out.print("\nint main()");
     }
 
-    public void emit_startblock() {
+    public void emit_start_block() {
         System.out.print("{");
         indent_code(pos++);
         System.out.print("\n");
     }
 
-    public void emit_endblock() {
+    public void emit_end_block() {
         indent_code(--pos);
         System.out.print("}\n");
     }
@@ -113,7 +113,7 @@ parser code {:
         if (dicionario.containsKey(id)) {
             String v = dicionario.get(id).getScope();
             if (v.equals(SCOPE))
-                report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] na função [" + SCOPE + "]", null);
+                report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
 
         if (tipo.equals("INT")) {
@@ -131,7 +131,7 @@ parser code {:
         if (dicionario.containsKey(id)) {
             String value = dicionario.get(id).getScope();
             if (value.equals(SCOPE))
-                report_fatal_error("emit_declaracao_variavel: Variável duplicada [" + id + "] na função [" + SCOPE + "]", null);
+                report_fatal_error("emit_declaracao_variavel: Variável duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
 
         if (tipo.equals("INT")) {
@@ -144,7 +144,7 @@ parser code {:
     }
 
     public void emit_atribuicao(String id, String value) {
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         System.out.print(id + " = " + value + ";\n");
     }
 
@@ -170,9 +170,11 @@ parser code {:
 
     public void emit_leia(String id) {
         indent_code(pos);
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         TabelaSimbolo t1 = dicionario.get(id);
+
         String tipo = t1.getTipo();
+
         if (tipo.equals("INT")) {
             System.out.print("scanf(\"%d\", &" + id + ");\n");
         } else {
@@ -209,6 +211,13 @@ parser code {:
         System.out.print("while (" + value + ") ");
     }
 
+    public void indent_code(int pos) {
+        for (int i = 0; i < pos * 3; i++) {
+            System.out.print(" ");
+        }
+    }
+
+
     public String checkExpr(String e1, String e2) {
         String tipoE1 = "", tipoE2 = "";
 
@@ -216,6 +225,7 @@ parser code {:
             String e1_original = e1;
             if (e1.contains("[")) e1 = e1.substring(0, e1.indexOf('['));
             TabelaSimbolo t1 = dicionario.get(e1);
+
             if (t1 == null) {
                 report_fatal_error("Variável não declarada [" + e1_original + "]", null);
             }
@@ -239,13 +249,7 @@ parser code {:
         return tipoE1;
     }
 
-    public void indent_code(int pos) {
-        for (int i = 0; i < pos * 3; i++) {
-            System.out.print(" ");
-        }
-    }
-
-    public void emit_escreval(String id) {
+        public void emit_escreval(String id) {
         indent_code(pos);
         TabelaSimbolo t1 = dicionario.get(id);
         if (t1 == null) {
@@ -266,7 +270,7 @@ parser code {:
 
     public void emit_atribuicao_vetor(String id, String tamanho, String expressao) {
         indent_code(pos);
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         System.out.print(id + "[" + tamanho + "] = " + expressao + ";\n");
     }
 
@@ -275,7 +279,7 @@ parser code {:
         if (dicionario.containsKey(id)) {
             String value = dicionario.get(id).getScope();
             if (value.equals(SCOPE))
-                report_fatal_error("emit_declaracao_vetor: Variável duplicada [" + id + "] na função [" + SCOPE + "]", null);
+                report_fatal_error("emit_declaracao_vetor: Variável duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
 
         if (tipo.equals("INT")) {
@@ -287,7 +291,7 @@ parser code {:
         dicionario.put(id, new TabelaSimbolo(tipo, true, tamanho, SCOPE));
     }
 
-    public void checarVariavelNaoDeclarada(String id) {
+    public void checar_Variavel_Nao_Declarada(String id) {
         if (id.contains("[")) {
             id = id.substring(0, id.indexOf('['));
         }
@@ -314,7 +318,7 @@ parser code {:
     }
 
     public void emit_parameter_declaration(String id) {
-        checarVariavelNaoDeclarada(id);
+        checar_Variavel_Nao_Declarada(id);
         System.out.print(id.trim());
     }
 
@@ -350,9 +354,9 @@ header ::= {: emit_header(); System.out.print("\n\n"); :}
            ;
 program ::= function_list
             PROGRAM        {: SCOPE="MAIN"; emit_program(); :}  
-            STARTPRG       {: emit_startblock(); :} 
+            STARTPRG       {: emit_start_block(); :} 
             list_command   
-            ENDPRG         {: emit_endblock(); :}
+            ENDPRG         {: emit_end_block(); :}
             ;
 
 /* Functions */
@@ -366,9 +370,9 @@ function    ::= PROCEDURE
                 LPAREN  {: System.out.print("("); :}
                 parameter_list
                 RPAREN  {: System.out.print(")"); :}
-                STARTPRG {: emit_startblock(); :}
+                STARTPRG {: emit_start_block(); :}
                 list_command
-                ENDPRG  {: emit_endblock(); System.out.print("\n\n"); :}
+                ENDPRG  {: emit_end_block(); System.out.print("\n\n"); :}
             ;
 
 /* Parameters */
@@ -525,26 +529,26 @@ readl      ::= READLINE
 /* Control Flow */
 if          ::= IFF 
                 expr:value    {: emit_if(value);   :}
-                THENN         {: emit_startblock();  :}
+                THENN         {: emit_start_block();  :}
                 list_command
                 elsepart  
-                ENDELSE       {: emit_endblock();       :}
+                ENDELSE       {: emit_end_block();       :}
                 ;
 
-elsepart      ::=  ELSEE      {: emit_endblock(); emit_else(); emit_startblock(); :}
+elsepart      ::=  ELSEE      {: emit_end_block(); emit_else(); emit_start_block(); :}
                    list_command
                    | /* empty */
                    ;
 
-for         ::= PARA ID:id DE expr:n1 ATE expr:n2 PASSO expr:n3 FACA {: emit_for(id,n1,n2,n3); emit_startblock();  :}
+for         ::= PARA ID:id DE expr:n1 ATE expr:n2 PASSO expr:n3 FACA {: emit_for(id,n1,n2,n3); emit_start_block();  :}
                 list_command
-                FIMPARA {:  emit_endblock(); :}
+                FIMPARA {:  emit_end_block(); :}
             ;
 
 while       ::= ENQUANTO expr:value {: emit_while(value); :}
-                FACA                {: emit_startblock();  :}
+                FACA                {: emit_start_block();  :}
                 list_command
-                FIMENQUANTO         {:  emit_endblock(); :}
+                FIMENQUANTO         {:  emit_end_block(); :}
             ;                                                       
                                                                                          
 /* Expressions */                                                 
@@ -567,3 +571,4 @@ expr     ::= expr:e1 PLUS expr:e2         {: RESULT =  e1 + "+" + e2;  dicionari
           | FLOATT:n                      {: RESULT = n;  dicionario.put(RESULT,new TabelaSimbolo("FLOAT",false));             :}
           | vetor: v                      {: RESULT = v;  dicionario.put(RESULT,new TabelaSimbolo(checkExpr(v, null), true));  :} 
            ;
+           
