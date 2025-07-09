@@ -115,7 +115,6 @@ parser code {:
             if (v.equals(SCOPE))
                 report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
-
         if (tipo.equals("INT")) {
             System.out.print("int " + id + " = " + value + ";\n");
         } else {
@@ -218,36 +217,48 @@ parser code {:
     }
 
 
-    public String checkExpr(String e1, String e2) {
-        String tipoE1 = "", tipoE2 = "";
+    public String checkExpr(String e1, String e2){   
+        String tipoE1 = "", tipoE2 = "";  
+        
+        String e1aux, e2aux;
+        e1aux = e1; e2aux = e2; 
 
-        if (e1 != null) {
-            String e1_original = e1;
-            if (e1.contains("[")) e1 = e1.substring(0, e1.indexOf('['));
-            TabelaSimbolo t1 = dicionario.get(e1);
+        if(e1 != null){
 
-            if (t1 == null) {
-                report_fatal_error("Variável não declarada [" + e1_original + "]", null);
+          if(e1.contains("[")){ e1 = e1.substring(0,e1.indexOf('[')); }
+
+          checar_Variavel_Nao_Declarada(e1);
+          checar_Uso_Correto_Vetores(e1aux);
+
+           TabelaSimbolo t1 = dicionario.get(e1);  
+           if(t1 != null)
+              tipoE1 = t1.getTipo(); 
+
+            if(e2 != null){
+               if(e2.contains("[")){ e2 = e2.substring(0,e2.indexOf('[')); }
+               checar_Variavel_Nao_Declarada(e2);
+               checar_Uso_Correto_Vetores(e2aux);
+
+               TabelaSimbolo t2 = dicionario.get(e2);  
+               if(t2 != null) {
+                  tipoE2 = t2.getTipo(); 
+               }
+
+              
             }
-            tipoE1 = t1.getTipo();
 
-            if (e2 != null) {
-                String e2_original = e2;
-                if (e2.contains("[")) e2 = e2.substring(0, e2.indexOf('['));
-                TabelaSimbolo t2 = dicionario.get(e2);
-                if (t2 == null) {
-                    report_fatal_error("Variável não declarada [" + e2_original + "]", null);
-                }
-                tipoE2 = t2.getTipo();
-            }
         }
 
-        if (!tipoE2.equals("") && !tipoE1.equals(tipoE2)) {
-            report_fatal_error("Language does not allow operations with different types!", null);
+        if(! tipoE2.equals("")){
+
+            if(! tipoE1.equals(tipoE2)){
+                report_fatal_error("Language does not allow operations with different types!",null);
+            }
         }
 
         return tipoE1;
     }
+
 
         public void emit_escreval(String id) {
         indent_code(pos);
@@ -301,7 +312,7 @@ parser code {:
         }
     }
 
-    public void checarUsoCorretoVetores(String id) {
+    public void checar_Uso_Correto_Vetores(String id) {
         String idaux = id;
         if (id.contains("[")) {
             id = id.substring(0, id.indexOf('['));
@@ -328,14 +339,18 @@ parser code {:
 /* Terminals (tokens returned by the scanner). */
 terminal            PLUS, MINUS, TIMES, DIVIDE,  LPAREN, RPAREN, LBRCKT, RBRCKT, EQUALS, GREATER,LESS, PROGRAM, STARTPRG, ENDPRG, READLINE, WRITELINE,DECLINT,DECLFLOAT, E, OU, NAO;
 terminal            IFF, SEMI, THENN,  ELSEE, ENDELSE, ATTRIB, PARA, DE, ATE, PASSO, FACA, FIMPARA, ENQUANTO, FIMENQUANTO,PROCEDURE, COMMA, RETURN, RETURN_TYPE, VOID;
-terminal String	  ID;
+terminal String	    ID;
 terminal String     INTT;      
 terminal String     FLOATT;
 terminal String     TEXTO;
 terminal String     ESCREVAL;
+
+
 /* Non terminals */
-non terminal             program, list_command, command, assign , declare_variable, writel, readl,if,elsepart,for,while,writen,assignment_types, array_assignment_types,parameter_list, parameter, return_function, return_type, function_call, call_parameter_list, call_parameter, return_function_type,function_list,function,header;
-non terminal  String    expr,tipo,vetor;      
+non terminal     program, list_command, command, assign , declare_variable, writel, readl,if,    elsepart,  
+                 for, while,writen,assignment_types, array_assignment_types,parameter_list, parameter, 
+                 return_function, return_type, function_call, call_parameter_list, call_parameter,   return_function_type,function_list,function,header;
+non terminal String    expr,tipo,vetor;      
 
 /* Precedences */
 precedence left EQUALS;

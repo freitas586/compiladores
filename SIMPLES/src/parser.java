@@ -620,7 +620,6 @@ public class parser extends java_cup.runtime.lr_parser {
             if (v.equals(SCOPE))
                 report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
-
         if (tipo.equals("INT")) {
             System.out.print("int " + id + " = " + value + ";\n");
         } else {
@@ -723,36 +722,48 @@ public class parser extends java_cup.runtime.lr_parser {
     }
 
 
-    public String checkExpr(String e1, String e2) {
-        String tipoE1 = "", tipoE2 = "";
+    public String checkExpr(String e1, String e2){   
+        String tipoE1 = "", tipoE2 = "";  
+        
+        String e1aux, e2aux;
+        e1aux = e1; e2aux = e2; 
 
-        if (e1 != null) {
-            String e1_original = e1;
-            if (e1.contains("[")) e1 = e1.substring(0, e1.indexOf('['));
-            TabelaSimbolo t1 = dicionario.get(e1);
+        if(e1 != null){
 
-            if (t1 == null) {
-                report_fatal_error("Variável não declarada [" + e1_original + "]", null);
+          if(e1.contains("[")){ e1 = e1.substring(0,e1.indexOf('[')); }
+
+          checar_Variavel_Nao_Declarada(e1);
+          checar_Uso_Correto_Vetores(e1aux);
+
+           TabelaSimbolo t1 = dicionario.get(e1);  
+           if(t1 != null)
+              tipoE1 = t1.getTipo(); 
+
+            if(e2 != null){
+               if(e2.contains("[")){ e2 = e2.substring(0,e2.indexOf('[')); }
+               checar_Variavel_Nao_Declarada(e2);
+               checar_Uso_Correto_Vetores(e2aux);
+
+               TabelaSimbolo t2 = dicionario.get(e2);  
+               if(t2 != null) {
+                  tipoE2 = t2.getTipo(); 
+               }
+
+              
             }
-            tipoE1 = t1.getTipo();
 
-            if (e2 != null) {
-                String e2_original = e2;
-                if (e2.contains("[")) e2 = e2.substring(0, e2.indexOf('['));
-                TabelaSimbolo t2 = dicionario.get(e2);
-                if (t2 == null) {
-                    report_fatal_error("Variável não declarada [" + e2_original + "]", null);
-                }
-                tipoE2 = t2.getTipo();
-            }
         }
 
-        if (!tipoE2.equals("") && !tipoE1.equals(tipoE2)) {
-            report_fatal_error("Language does not allow operations with different types!", null);
+        if(! tipoE2.equals("")){
+
+            if(! tipoE1.equals(tipoE2)){
+                report_fatal_error("Language does not allow operations with different types!",null);
+            }
         }
 
         return tipoE1;
     }
+
 
         public void emit_escreval(String id) {
         indent_code(pos);
@@ -806,7 +817,7 @@ public class parser extends java_cup.runtime.lr_parser {
         }
     }
 
-    public void checarUsoCorretoVetores(String id) {
+    public void checar_Uso_Correto_Vetores(String id) {
         String idaux = id;
         if (id.contains("[")) {
             id = id.substring(0, id.indexOf('['));
