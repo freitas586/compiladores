@@ -328,7 +328,7 @@ parser code {:
         }
     }
 
-    public void emit_parameter_declaration(String id) {
+    public void emit_declaracao_parametro(String id) {
         checar_Variavel_Nao_Declarada(id);
         System.out.print(id.trim());
     }
@@ -336,9 +336,13 @@ parser code {:
 :};
 
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
+
 /* Terminals (tokens returned by the scanner). */
+
 terminal            PLUS, MINUS, TIMES, DIVIDE,  LPAREN, RPAREN, LBRCKT, RBRCKT, EQUALS, GREATER,LESS, PROGRAM, STARTPRG, ENDPRG, READLINE, WRITELINE,DECLINT,DECLFLOAT, E, OU, NAO;
+
 terminal            IFF, SEMI, THENN,  ELSEE, ENDELSE, ATTRIB, PARA, DE, ATE, PASSO, FACA, FIMPARA, ENQUANTO, FIMENQUANTO,PROCEDURE, COMMA, RETURN, RETURN_TYPE, VOID;
+
 terminal String	    ID;
 terminal String     INTT;      
 terminal String     FLOATT;
@@ -347,12 +351,16 @@ terminal String     ESCREVAL;
 
 
 /* Non terminals */
-non terminal     program, list_command, command, assign , declare_variable, writel, readl,if,    elsepart,  
-                 for, while,writen,assignment_types, array_assignment_types,parameter_list, parameter, 
-                 return_function, return_type, function_call, call_parameter_list, call_parameter,   return_function_type,function_list,function,header;
+
+non terminal     header,function_list, function, program, list_command, command, assign , declare_variable, 
+                 writel, writen, assignment_types, array_assignment_types, readl,if, elsepart,  
+                 for, while, parameter_list, parameter, 
+                 return_function, return_type, function_call, call_parameter_list, call_parameter,   return_function_type;
+
 non terminal String    expr,tipo,vetor;      
 
 /* Precedences */
+
 precedence left EQUALS;
 precedence left GREATER, LESS;
 precedence left PLUS, MINUS;
@@ -360,7 +368,6 @@ precedence left TIMES, DIVIDE;
 precedence left LPAREN, RPAREN;
 precedence left LBRCKT, RBRCKT; 
 precedence left E, OU, NAO;
-
 
 
 /* The grammar rules */
@@ -408,10 +415,10 @@ call_parameter_list ::= call_parameter_list call_parameter
                   | /* empty */
                   ;
 
-call_parameter ::= expr:c {: emit_parameter_declaration(c); :}
+call_parameter ::= expr:c {: emit_declaracao_parametro(c); :}
                    COMMA  {: System.out.print(","); :}
                    |
-                   expr:c {: emit_parameter_declaration(c); :}
+                   expr:c {: emit_declaracao_parametro(c); :}
                    | VOID
                    ;
 
