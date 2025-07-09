@@ -116,12 +116,34 @@ parser code {:
                 report_fatal_error("emit_declaracao_variavel_com_atribuicao: Variável Duplicada [" + id + "] in function [" + SCOPE + "]", null);
         }
         if (tipo.equals("INT")) {
-            System.out.print("int " + id + " = " + value + ";\n");
+            System.out.print("int " + id + " = " + value);
         } else {
-            System.out.print("float " + id + " = " + value + ";\n");
+            System.out.print("float " + id + " = " + value);
         }
 
         dicionario.put(id, new TabelaSimbolo(tipo, false, "0", SCOPE));
+    }
+
+    public void emit_declaracao_vetor(String tipo, String id, String tamanho) {
+        indent_code(pos);
+        if (dicionario.containsKey(id)) {
+            String value = dicionario.get(id).getScope();
+            if (value.equals(SCOPE))
+                report_fatal_error("emit_declaracao_vetor: Variável duplicada [" + id + "] in function [" + SCOPE + "]", null);
+        }
+
+        if (tipo.equals("INT")) {
+            System.out.print("int " + id + "[" + tamanho + "]");
+        } else {
+            System.out.print("float " + id + "[" + tamanho + "]");
+        }
+
+        dicionario.put(id, new TabelaSimbolo(tipo, true, tamanho, SCOPE));
+    }
+
+    public void emit_declaracao_parametro(String id) {
+        checar_Variavel_Nao_Declarada(id);
+        System.out.print(id.trim());
     }
 
     public void emit_declaracao_variavel(String id, String tipo) {
@@ -142,9 +164,16 @@ parser code {:
         dicionario.put(id, new TabelaSimbolo(tipo, false, "0", SCOPE));
     }
 
-    public void emit_atribuicao(String id, String value) {
+    public void emit_atribuicao_vetor(String id, String tamanho, String expressao) {
+        indent_code(pos);
         checar_Variavel_Nao_Declarada(id);
-        System.out.print(id + " = " + value + ";\n");
+        System.out.print(id + "[" + tamanho + "] = " + expressao);
+    }
+
+    public void emit_atribuicao(String id, String value) {
+        indent_code (pos);
+        checar_Variavel_Nao_Declarada(id);
+        System.out.print(id + " = " + value);
     }
 
     public void emit_escreva(String id) {
@@ -156,15 +185,34 @@ parser code {:
 
         String tipo = t1.getTipo();
         if (tipo.equals("INT")) {
-            System.out.print("printf(\"%d\", " + id + ");\n");
+            System.out.print("printf(\"%d\", " + id + ")");
         } else {
-            System.out.print("printf(\"%f\", " + id + ");\n");
+            System.out.print("printf(\"%f\", " + id + ")");
         }
     }
 
     public void emit_escreva_texto(String text) {
         indent_code(pos);
-        System.out.print("printf(" + text + ");\n");
+        System.out.print("printf(" + text + ")");
+    }
+
+    public void emit_escreval(String id) {
+        indent_code(pos);
+        TabelaSimbolo t1 = dicionario.get(id);
+        if (t1 == null) {
+            report_fatal_error("Variável não declarada [" + id + "]", null);
+        }
+        String tipo = t1.getTipo();
+        if (tipo.equals("INT")) {
+            System.out.print("printf(\"%d\\n\", " + id + ")");
+        } else {
+            System.out.print("printf(\"%f\\n\", " + id + ")");
+        }
+    }
+
+    public void emit_escreval_texto(String text) {
+        indent_code(pos);
+        System.out.print("printf(\"%s\\n\", " + text + ")");
     }
 
     public void emit_leia(String id) {
@@ -175,9 +223,9 @@ parser code {:
         String tipo = t1.getTipo();
 
         if (tipo.equals("INT")) {
-            System.out.print("scanf(\"%d\", &" + id + ");\n");
+            System.out.print("scanf(\"%d\", &" + id + ")");
         } else {
-            System.out.print("scanf(\"%f\", &" + id + ");\n");
+            System.out.print("scanf(\"%f\", &" + id + ")");
         }
     }
 
@@ -258,50 +306,7 @@ parser code {:
 
         return tipoE1;
     }
-
-
-        public void emit_escreval(String id) {
-        indent_code(pos);
-        TabelaSimbolo t1 = dicionario.get(id);
-        if (t1 == null) {
-            report_fatal_error("Variável não declarada [" + id + "]", null);
-        }
-        String tipo = t1.getTipo();
-        if (tipo.equals("INT")) {
-            System.out.print("printf(\"%d\\n\", " + id + ");\n");
-        } else {
-            System.out.print("printf(\"%f\\n\", " + id + ");\n");
-        }
-    }
-
-    public void emit_escreval_texto(String text) {
-        indent_code(pos);
-        System.out.print("printf(\"%s\\n\", " + text + ");\n");
-    }
-
-    public void emit_atribuicao_vetor(String id, String tamanho, String expressao) {
-        indent_code(pos);
-        checar_Variavel_Nao_Declarada(id);
-        System.out.print(id + "[" + tamanho + "] = " + expressao + ";\n");
-    }
-
-    public void emit_declaracao_vetor(String tipo, String id, String tamanho) {
-        indent_code(pos);
-        if (dicionario.containsKey(id)) {
-            String value = dicionario.get(id).getScope();
-            if (value.equals(SCOPE))
-                report_fatal_error("emit_declaracao_vetor: Variável duplicada [" + id + "] in function [" + SCOPE + "]", null);
-        }
-
-        if (tipo.equals("INT")) {
-            System.out.print("int " + id + "[" + tamanho + "];\n");
-        } else {
-            System.out.print("float " + id + "[" + tamanho + "];\n");
-        }
-
-        dicionario.put(id, new TabelaSimbolo(tipo, true, tamanho, SCOPE));
-    }
-
+    
     public void checar_Variavel_Nao_Declarada(String id) {
         if (id.contains("[")) {
             id = id.substring(0, id.indexOf('['));
@@ -328,11 +333,7 @@ parser code {:
         }
     }
 
-    public void emit_declaracao_parametro(String id) {
-        checar_Variavel_Nao_Declarada(id);
-        System.out.print(id.trim());
-    }
-
+    
 :};
 
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
@@ -466,19 +467,16 @@ command ::=    declare_variable
 
 
 /* Types */
-return_type ::=     DECLINT          {: RESULT = "INT" ;  System.out.print("int ");   :}
-                  | DECLFLOAT        {: RESULT = "FLOAT"; System.out.print("float "); :}
-                  | VOID             {: RESULT = "VOID";  System.out.print("void ");  :}  
-                  ;
 
 tipo ::=      DECLINT:t   {: RESULT = "INT"  ;     :}
             | DECLFLOAT:t {: RESULT = "FLOAT";     :}
             ;
 
-/* Vetor */
-vetor      ::= ID:i LBRCKT INTT:z RBRCKT            {: RESULT = i + "["+z+"]"; pilhaAuxiliar.push(z); pilhaAuxiliar.push(i); :}
-               | ID:i LBRCKT expr:z RBRCKT          {: RESULT = i + "["+z+"]"; pilhaAuxiliar.push(z); pilhaAuxiliar.push(i); :}
-            ;
+return_type ::=     DECLINT          {: RESULT = "INT" ;  System.out.print("int ");   :}
+                  | DECLFLOAT        {: RESULT = "FLOAT"; System.out.print("float "); :}
+                  | VOID             {: RESULT = "VOID";  System.out.print("void ");  :}  
+                  ;
+
 
 /* Variable Declarations */
 declare_variable ::= tipo:t  ID:id 
@@ -571,7 +569,12 @@ while       ::= ENQUANTO expr:value {: emit_while(value); :}
                 FACA                {: emit_start_block();  :}
                 list_command
                 FIMENQUANTO         {:  emit_end_block(); :}
-            ;                                                       
+            ;      
+
+/* Vetor */
+vetor      ::= ID:i LBRCKT INTT:z RBRCKT            {: RESULT = i + "["+z+"]"; pilhaAuxiliar.push(z); pilhaAuxiliar.push(i); :}
+               | ID:i LBRCKT expr:z RBRCKT          {: RESULT = i + "["+z+"]"; pilhaAuxiliar.push(z); pilhaAuxiliar.push(i); :}
+            ;                                                 
                                                                                          
 /* Expressions */                                                 
 expr     ::= expr:e1 PLUS expr:e2         {: RESULT =  e1 + "+" + e2;  dicionario.put(RESULT,new TabelaSimbolo(checkExpr(e1,e2),false)); :}
